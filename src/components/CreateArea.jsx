@@ -1,6 +1,11 @@
 import React, { useState } from "react";
+import AddIcon from '@mui/icons-material/Add';
+import { Fab } from "@mui/material";
+import Zoom from '@mui/material/Zoom';
 
 function CreateArea(props) {
+
+  const [clicked, setClick] = useState(false);
 
   const [note, setNote] = useState({
     id: 0,
@@ -12,23 +17,15 @@ function CreateArea(props) {
     const {name, value} = event.target;
     
     setNote((prevNote) => {
-      if(name === "title"){
-        return {
-          id: prevNote.id,
-          title: value,
-          content: prevNote.content
-        }    
-      } else if(name === "content"){
-        return {
-          id: prevNote.id,
-          title: prevNote.title,
-          content: value
-        }  
-      }
+      return {
+          ...prevNote,
+          [name] : value
+        } 
     });
   }
 
-  function handleSubmit(event){
+  function submitNote(event){
+    props.onClick(note);
     setNote((prevNote) => ({
       id: ++prevNote.id,
       title: "",
@@ -36,14 +33,19 @@ function CreateArea(props) {
     event.preventDefault();
   }
 
+  function handleClick(){
+    setClick(true);
+  }
 
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <input onChange={handleChange} name="title" placeholder="Title" value={note.title} />
-        <textarea onChange={handleChange} name="content" placeholder="Take a note..." rows="3" value={note.content}/>
-        <button onClick={() => {props.onClick(note)}}>Add</button>
+      <form class="create-note">
+      {clicked && <input onChange={handleChange} name="title" placeholder="Title" value={note.title} />}
+        <textarea onChange={handleChange} onClick={handleClick} name="content" placeholder="Take a note..." rows={clicked ? 3: 1} value={note.content}/>
+        <Zoom in={clicked}>
+          <Fab onClick={submitNote}><AddIcon /></Fab>
+        </Zoom>
       </form>
     </div>
   );
